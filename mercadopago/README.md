@@ -1,5 +1,3 @@
-[![Maintainability](https://api.codeclimate.com/v1/badges/a3efc709ca5a444807b9/maintainability)](https://codeclimate.com/github/mercadopago/cart-prestashop-6/maintainability)
-
 # Prestashop - Mercado Pago Module (1.6.x, 1.7.x)
 ---
 
@@ -10,12 +8,10 @@
 * [Setup](#setup)
 * [Notifications](#notifications)
 * [Example features](#pictures_features)
-* [Suport](#suport)
 * [Social](#social)
 
-
 <a name="features"></a>
-## Features ##
+## Features
 
 Checkout options right for your business:
 We offer two checkout methods that make it easy to securely accept payments from anyone, anywhere.
@@ -46,8 +42,8 @@ Great for merchants who want to get going quickly and easily.
 *Available for Argentina, Brazil, Chile, Colombia, Mexico, Peru, Uruguay and Venezuela*
 
 <a name="requirements"></a>
-## Requirements ##
-Basically, the requirements of this plugin are same as you need to run WooCommerce. Your machine should have:
+## Requirements
+Basically, the requirements of this plugin are same as you need to run Prestashop. Your machine should have:
 
 **Platforms**
 
@@ -66,7 +62,7 @@ During the sandbox mode tests, you can operate over HTTP, but for homologation y
 
 
 <a name="available_versions"></a>
-## Available versions ##
+## Available versions
 <table>
   <thead>
     <tr>
@@ -77,12 +73,12 @@ During the sandbox mode tests, you can operate over HTTP, but for homologation y
   <thead>
   <tbody>
     <tr>
-      <td><a href="https://github.com/mercadopago/cart-prestashop-6/releases">v1.6.x</a></td>
+      <td><a href="https://addons.prestashop.com/pt/pagamento-carta-carteira/23962-mercado-pago.html">v1.6.x</a></td>
       <td>Stable (Current Version)</td>
       <td>Prestashop v1.6.x</td>
      </tr>
     <tr>
-      <td><a href="https://github.com/mercadopago/cart-prestashop-7/releases">v1.7.x</a></td>
+      <td><a href="https://github.com/mercadopago/cart-prestashop/tree/master/v1.7.x">v1.7.x</a></td>
       <td>Stable (Current Version)</td>
       <td>Prestashop v1.7.x</td>
      </tr>
@@ -90,14 +86,14 @@ During the sandbox mode tests, you can operate over HTTP, but for homologation y
 </table>
 
 <a name="installation"></a>
-## Installation ##
+## Installation
 
 1. Download Prestashop: https://www.prestashop.com/es/versiones-para-programadores#previous-version
     * Prestashop v1.6.x
     * Prestashop v1.7.x
 
 <a name="setup"></a>
-## Setup ##
+## Setup
 
 1. Copy **mercadopago** folder to **modules** folder.
 
@@ -105,7 +101,7 @@ During the sandbox mode tests, you can operate over HTTP, but for homologation y
 
 3. Search by **MercadoPago** and click install. <br />
 You will receive the following message: " Module(s) installed successfully."
-  ![Installation](https://raw.github.com/mercadopago/cart-prestashop-6/master/README.img/Installation.JPG)<br />
+  ![Installation](https://raw.github.com/mercadopago/cart-prestashop/master/README.img/Installation.JPG)<br />
 
 4. Set your **CLIENT_ID** and **CLIENT_SECRET**, or **PUBLIC_KEY** and **ACCESS_TOKEN** (depending on which module you're using). 
 
@@ -115,7 +111,7 @@ You will receive the following message: " Module(s) installed successfully."
   * Chile: [https://www.mercadopago.com/mlc/account/credentials](https://www.mercadopago.com/mlc/account/credentials)
   * Colombia: [https://www.mercadopago.com/mco/account/credentials](https://www.mercadopago.com/mco/account/credentials)
   * Mexico: [https://www.mercadopago.com/mlm/account/credentials](https://www.mercadopago.com/mlm/account/credentials)
-  * Peru: [https://www.mercadopago.com/mlp/account/credentials](https://www.mercadopago.com/mlp/account/credentials)
+  * Peru: [https://www.mercadopago.com/mpe/account/credentials](https://www.mercadopago.com/mpe/account/credentials)
   * Venezuela: [https://www.mercadopago.com/mlv/account/credentials](https://www.mercadopago.com/mlv/account/credentials)
   * Uruguay: [https://www.mercadopago.com/mlu/account/credentials](https://www.mercadopago.com/mlu/account/credentials)
 
@@ -148,29 +144,22 @@ Your store will automatically sync with Mercado Pago. The notification URL will 
 
 **Credit Card Customized Checkout**
 <br/>
-![pictures_features](https://raw.github.com/mercadopago/cart-prestashop-6/master/README.img/Checkout.jpg)
+![pictures_features](https://raw.github.com/mercadopago/cart-prestashop/master/README.img/Checkout.jpg)
 
 **Print Ticket**
 <br/>
-![pictures_features](https://raw.github.com/mercadopago/cart-prestashop-6/master/README.img/Ticket.jpg)
+![pictures_features](https://raw.github.com/mercadopago/cart-prestashop/master/README.img/Ticket.jpg)
 
 **Customer Card** <strong>Prestashop v1.6.x</strong>
 <br/>
-![pictures_features](https://raw.github.com/mercadopago/cart-prestashop-6/master/README.img/CustomerCard.jpg)
+![pictures_features](https://raw.github.com/mercadopago/cart-prestashop/master/README.img/CustomerCard.jpg)
 
 **Discount Coupon** <strong>Prestashop v1.6.x</strong>
 <br/>
-![pictures_features](https://raw.github.com/mercadopago/cart-prestashop-6/master/README.img/Coupon.jpg)
-
-
-<a name="suport"></a>
-## Suport ##
-
-If you have some problem, [click here](https://www.mercadopago.com.br/developers/suporte).
-
+![pictures_features](https://raw.github.com/mercadopago/cart-prestashop/master/README.img/Coupon.jpg)
 
 <a name="social"></a>
-## Social ##
+## Social
 
 Follow our facebook group and watch our videos
 <ul>

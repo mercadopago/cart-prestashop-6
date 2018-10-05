@@ -29,7 +29,6 @@ class MPRestCli
 {
     private static $check_loop = 0;
     const API_BASE_SETTINGS_URL = 'http://localhost:8080';
-
     const API_BASE_URL = 'https://api.mercadopago.com';
     const API_BASE_MELI_URL = 'https://api.mercadolibre.com';
 

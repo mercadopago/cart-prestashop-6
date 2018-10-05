@@ -32,8 +32,16 @@
 
 <div class="mp-module">
 	<div>
+	
 		<div id="alerts">
-			{if $success eq 'true' and $errors|@count == 0}
+			{if $versao neq $versao_atual}
+				<div class="bootstrap">
+					<div class="alert alert-danger">
+						<button type="button" class="close" data-dismiss="alert">×</button>
+						Por favor atualizar seu módulo para verão {$versao|escape:'htmlall':'UTF-8'}, faça o download <a href="{$url|escape:'htmlall':'UTF-8'}" target="_blank">aqui</a>
+					</div>
+				</div>			
+			{else if $success eq 'true' and $errors|@count == 0}
 			<div id="alert" class="bootstrap">
 				<div class="alert alert-success">
 					<button type="button" class="close" data-dismiss="alert">×</button>

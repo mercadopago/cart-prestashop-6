@@ -519,7 +519,6 @@ http://opensource.org/licenses/osl-3.0.php Open Software License (OSL
 	{if $country == 'MLM' || $country == 'MPE' || $country ==
 	'MLA' || $country == 'MLC' || $country == 'MCO' || $country == 'MLV' || $country == 'MLU'}
 	{foreach from=$offline_payment_settings key=offline_payment item=value}
-	<label>"{$value.disabled|escape:'htmlall':'UTF-8'}"</label>
 	{if $value.disabled  != "true" && $mercadoenvios_activate == "false"}
 	<div class="row">
 		<div class="col-xs-12 col-md-6">
@@ -1917,10 +1916,9 @@ http://opensource.org/licenses/osl-3.0.php Open Software License (OSL
 	console.info(html_options);
 	$("#credit_option").html(html_options);
 
-
 </script>
 
-{if !$creditcard_disable && $public_key != ''}
+{if $creditcard_disable == "false" && $public_key != ''}
 	<script type="text/javascript">
 		if (window.Mercadopago === undefined) {
 			$.getScript("https://secure.mlstatic.com/sdk/javascript/v1/mercadopago.js")

@@ -1427,6 +1427,10 @@ class MercadoPago extends PaymentModule
         $this->context->controller->addCss($this->_path . 'views/css/settings.css', 'all');
         $this->context->controller->addCss($this->_path . 'views/css/style.css', 'all');
 
+        $result = $this->mercadopago->getVersion();
+        $tagName = str_replace("v", "", $result['response']['release']['tag_name']);
+        $url = $result['response']['repository']['html_url'];
+
         Configuration::updateValue(
             'MERCADOPAGO_EMAIL_ADMIN',
             Configuration::get('PS_SHOP_EMAIL')
@@ -1479,6 +1483,10 @@ class MercadoPago extends PaymentModule
             $this->context->smarty->assign($errors);
         }
         $settings["log"] = $this->_path . "/logs/mercadopago.log";
+
+        $settings["versao"] = $tagName;
+        $settings["versao_atual"] = MPApi::VERSION;
+        $settings["url"] = $url;
 
         $this->context->smarty->assign($settings);
         return $this->display(__file__, '/views/templates/admin/settings.tpl');
@@ -1723,6 +1731,7 @@ class MercadoPago extends PaymentModule
             }
             // send offline settings
             $offline_methods_payments = $this->mercadopago->getOfflinePaymentMethods();
+            error_log(print_r($offline_methods_payments, true));
             $offline_payment_settings = array();
             foreach ($offline_methods_payments as $offline_payment) {
                 $op_banner_variable = 'MERCADOPAGO_' . Tools::strtoupper($offline_payment['id'] . '_BANNER');

@@ -1,6 +1,6 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/a3efc709ca5a444807b9/maintainability)](https://codeclimate.com/github/mercadopago/cart-prestashop-6/maintainability)
 
-# Prestashop - Mercado Pago Module (1.6.x, 1.7.x)
+# Prestashop - Mercado Pago Module (1.6.x)
 ---
 
 * [Features](#features)
@@ -51,7 +51,7 @@ Basically, the requirements of this plugin are same as you need to run WooCommer
 
 **Platforms**
 
-* <a href="https://www.prestashop.com/en/download">Prestashop</a> 1.6 or greater;
+* <a href="https://www.prestashop.com/en/download">Prestashop</a> 1.6;
 
 **Web Server Host**
 
@@ -64,37 +64,10 @@ Basically, the requirements of this plugin are same as you need to run WooCommer
 If you're using Custom Checkout, it is a requirement that you have a SSL certificate, and the payment form to be provided under an HTTPS page.
 During the sandbox mode tests, you can operate over HTTP, but for homologation you'll need to acquire the certificate in case you don't have it.
 
-
-<a name="available_versions"></a>
-## Available versions ##
-<table>
-  <thead>
-    <tr>
-      <th>Plugin Version</th>
-      <th>Status</th>
-      <th>Compatible Versions</th>
-    </tr>
-  <thead>
-  <tbody>
-    <tr>
-      <td><a href="https://github.com/mercadopago/cart-prestashop-6/releases">v1.6.x</a></td>
-      <td>Stable (Current Version)</td>
-      <td>Prestashop v1.6.x</td>
-     </tr>
-    <tr>
-      <td><a href="https://github.com/mercadopago/cart-prestashop-7/releases">v1.7.x</a></td>
-      <td>Stable (Current Version)</td>
-      <td>Prestashop v1.7.x</td>
-     </tr>
-  </tbody>
-</table>
-
 <a name="installation"></a>
 ## Installation ##
 
-1. Download Prestashop: https://www.prestashop.com/es/versiones-para-programadores#previous-version
-    * Prestashop v1.6.x
-    * Prestashop v1.7.x
+1. [Download Prestashop v1.6.x](https://www.prestashop.com/es/versiones-para-programadores#previous-version). 
 
 <a name="setup"></a>
 ## Setup ##
@@ -105,9 +78,12 @@ During the sandbox mode tests, you can operate over HTTP, but for homologation y
 
 3. Search by **MercadoPago** and click install. <br />
 You will receive the following message: " Module(s) installed successfully."
-  ![Installation](https://raw.github.com/mercadopago/cart-prestashop-6/master/README.img/Installation.JPG)<br />
 
-4. Set your **CLIENT_ID** and **CLIENT_SECRET**, or **PUBLIC_KEY** and **ACCESS_TOKEN** (depending on which module you're using). 
+4. Set your **CLIENT_ID** and **CLIENT_SECRET**.
+![Installation](https://raw.github.com/mercadopago/cart-prestashop-6/master/README.img/Config_Standard.jpg)<br />
+
+5. Custom payments Set your **ACCESS_TOKEN** and **PUBLIC_KEY**.
+![Installation](https://raw.github.com/mercadopago/cart-prestashop-6/master/README.img/Config_Custom.jpg)<br />
 
   Get your credentials in the following address:
   * Argentina: [https://www.mercadopago.com/mla/account/credentials](https://www.mercadopago.com/mla/account/credentials)
@@ -174,6 +150,5 @@ If you have some problem, [click here](https://www.mercadopago.com.br/developers
 
 Follow our facebook group and watch our videos
 <ul>
-  <li><a href="https://www.facebook.com/groups/modulos.mercadopago/?ref=ts&fref=ts" target="_blank">FACEBOOK</a></li>
   <li><a href="https://www.youtube.com/playlist?list=PLl8LGzRu2_sXxChIJm1e0xY6dU3Dj_tNi" target="_blank">YOUTUBE</a></li>
 </ul>

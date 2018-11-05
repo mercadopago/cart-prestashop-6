@@ -126,3 +126,6 @@ V3.6.5
 
 V3.6.8
 - Add call to ckeck the last version off module
+
+3.6.9
+- Fix the key used to create the orders, customer->secure_key to cart-secure_key

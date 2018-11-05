@@ -148,7 +148,8 @@ http://opensource.org/licenses/osl-3.0.php Open Software License (OSL
 	</div>
 
 	{/if}
-{if $mercadoenvios_activate == 'false' && $creditcard_disable == 'false'}
+
+{if $mercadoenvios_activate == 'false' && $creditcard_excluded == 'false'}
 	<div class="card row">
 		<div class="mp-form">
 			<div class="row">
@@ -382,7 +383,7 @@ http://opensource.org/licenses/osl-3.0.php Open Software License (OSL
 
 	{if $country == 'MLB'}
 		{foreach from=$offline_payment_settings key=offline_payment item=value}
-			{if $boleto_disable == "false"  && $mercadoenvios_activate == 'false' && $offline_payment != 'pec'}
+			{if $mercadoenvios_activate == 'false' && $value.excluded != "true" && $offline_payment != 'pec' && $offline_payment == 'bolbradesco'}
 			<form action="{$custom_action_url|escape:'htmlall':'UTF-8'}" method="post"
 							id="form-{$offline_payment|escape:'htmlall':'UTF-8'}" class="formTicket" onsubmit="return submitBoletoFebraban();">
 				<input name="email" type="hidden" value="{$ticket.email|escape:'htmlall':'UTF-8'}"/> 
@@ -519,7 +520,7 @@ http://opensource.org/licenses/osl-3.0.php Open Software License (OSL
 	{if $country == 'MLM' || $country == 'MPE' || $country ==
 	'MLA' || $country == 'MLC' || $country == 'MCO' || $country == 'MLV' || $country == 'MLU'}
 	{foreach from=$offline_payment_settings key=offline_payment item=value}
-	{if $value.disabled  != "true" && $mercadoenvios_activate == "false"}
+	{if $value.excluded == "false" && $mercadoenvios_activate == "false"}
 	<div class="row">
 		<div class="col-xs-12 col-md-6">
 			<a href="javascript:void(0);"
@@ -1909,16 +1910,15 @@ http://opensource.org/licenses/osl-3.0.php Open Software License (OSL
 				}else{
 					html_options += "<option value='{$value.id|escape:'htmlall':'UTF-8'}' payment_type_id='{$value.payment_type_id|escape:'htmlall':'UTF-8'}'>{$value.name|escape:'htmlall':'UTF-8'}&nbsp;" + credit + "</option>";
 				}
-
 		"{/if} {/foreach}"
 	}
+    
 	html_options  += html_options_mp;
-	console.info(html_options);
 	$("#credit_option").html(html_options);
 
 </script>
 
-{if $creditcard_disable == "false" && $public_key != ''}
+{if $creditcard_excluded == "false" && $public_key != ''}
 	<script type="text/javascript">
 		if (window.Mercadopago === undefined) {
 			$.getScript("https://secure.mlstatic.com/sdk/javascript/v1/mercadopago.js")

@@ -32,7 +32,7 @@ class MercadoPagoNotificationModuleFrontController extends ModuleFrontController
     public function initContent()
     {
         parent::initContent();
-
+        
         $cart = new Cart(Tools::getValue('cart_id'));
         $total = (float) ($cart->getOrderTotal(true, Cart::BOTH));
         $checkout = Tools::getValue('checkout');
@@ -48,12 +48,43 @@ class MercadoPagoNotificationModuleFrontController extends ModuleFrontController
             $topic = Tools::getValue('topic');
             $id = Tools::getValue('id');
         }
+                         
+        UtilMercadoPago::log(
+            "Notification received - ",
+            "cart id ".Tools::getValue('cart_id')." - total is = " . $total
+        );
+        
+        UtilMercadoPago::log(
+            "Notification received - ",
+            "cart_id = " . Tools::getValue('cart_id')
+        );
+        
+        UtilMercadoPago::log(
+            "Notification received - ",
+            "cart id ".Tools::getValue('cart_id')." - id $topic = " . $id
+        );
+        
+        UtilMercadoPago::log(
+            "Notification received - ",
+            "cart id ".Tools::getValue('cart_id')." - type checkout = " . $checkout
+        );
+        
+        UtilMercadoPago::log(
+            "Notification received - ",
+            "cart id ".Tools::getValue('cart_id')." - topic = " . $topic
+        );     
+
+        UtilMercadoPago::log(
+            "Notification received - ",
+            "cart id ".Tools::getValue('cart_id')." - the order exist ? = " . $cart->orderExists()
+        );       
+        
         if ($checkout == 'custom') {
             $status = $this->getStatusCustom();
             if ($status == 'rejected') {
                 UtilMercadoPago::log(
                     "Notification",
-                    "The notification came, but the status is rejected " . Tools::getValue('data_id')
+                    "cart id ".Tools::getValue('cart_id')." - The notification came, but the status is rejected " . Tools::getValue('data_id')
                 );
                 var_dump(http_response_code(500));
                 die();
@@ -70,8 +101,12 @@ class MercadoPagoNotificationModuleFrontController extends ModuleFrontController
 
         if ($checkout == 'standard' || $checkout == 'custom') {
             if (!$cart->orderExists()) {
+               UtilMercadoPago::log(
+                    "Notification received - ",
+                    "cart id ".Tools::getValue('cart_id')." - order doesn't exist " . $cart->id ." and return 500 to API, because is necessary to create before."
+                );
+                
                 var_dump(http_response_code(500));
-                $customer = new Customer((int) $cart->id_customer);
                 $displayName = $mercadopago->l('Mercado Pago ' . $checkout);
                 $payment_status = Configuration::get(UtilMercadoPago::$statusMercadoPagoPresta['started']);
                 try {
@@ -84,12 +119,15 @@ class MercadoPagoNotificationModuleFrontController extends ModuleFrontController
                         array(),
                         (int) $cart->id_currency,
                         false,
-                        $customer->secure_key
+                        $cart->secure_key
                     );
-                    Order::getOrderByCartId(Tools::getValue('cart_id'));
+                   UtilMercadoPago::log(
+                        "Notification received - ",
+                        "cart id ".Tools::getValue('cart_id')." - The order was created " . Order::getOrderByCartId(Tools::getValue('cart_id')) . " for the cart ". $cart->id
+                    );                  
                 } catch (Exception $e) {
                     UtilMercadoPago::log(
-                        "There is a problem with notification id " . $cart->id,
+                        "cart id ".Tools::getValue('cart_id')." - There is a problem with notification id = " . $cart->id,
                         $e->getMessage()
                     );
                 }
@@ -100,8 +138,8 @@ class MercadoPagoNotificationModuleFrontController extends ModuleFrontController
                     $id
                 );
                 UtilMercadoPago::log(
-                    "Notification",
-                    "The notification return 201, the card is updated  " . Tools::getValue('cart_id')
+                    "Notification received - ",
+                    "cart id ".Tools::getValue('cart_id')." - The notification return 201, the cart was updated = " . $cart->id
                 );
                 var_dump(http_response_code(201));
             }

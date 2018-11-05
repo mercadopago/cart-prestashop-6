@@ -29,7 +29,7 @@
 	font-size: 100%;
 }
 </style>
-
+z
 <div class="mp-module">
 	<div>
 	
@@ -379,7 +379,7 @@
 					</legend>
 					<label>{l s='Active: ' mod='mercadopago'}</label>
 					<div class="">
-						<select name="MERCADOPAGO_CUSTOM_ACTIVE" id="custom_active">
+						<select name="MERCADOPAGO_CUSTOM_ACTIVE" id="custom_active" onchange="checkPaymentOff();">
 							<option value="true">{l s='Yes' mod='mercadopago'} </option>
 							<option value="false">{l s='No' mod='mercadopago'} </option>
 						</select>
@@ -388,9 +388,9 @@
 					<h3><p>{l s='Exclude payment methods:' mod='mercadopago'}</p></h3>
 					<div class="">
 						<label>{l s='Credit Card' mod='mercadopago'}:</label>
-						<input type="checkbox" class="options_custom" name="MERCADOPAGO_CREDITCARD_ACTIVE" value="true" id="creditcard_active"
+						<input type="checkbox" class="options_custom" name="MERCADOPAGO_CREDITCARD_EXCLUDED" value="true" onclick="checkValueBox(this)" id="creditcard_excluded"
 
-						{if $creditcard_active == 'true'}
+						{if $creditcard_excluded == 'true'}
 							checked
 						{/if}
 						/>
@@ -398,13 +398,15 @@
 
 					<br />
 					{foreach from=$offline_payment_settings key=offline_payment item=value}
-						<div class="">
-							<label>{$value.name|ucfirst|escape:'htmlall':'UTF-8'}:</label>
-							<input type="checkbox" name="MERCADOPAGO_{$offline_payment|upper|escape:'htmlall':'UTF-8'}_ACTIVE" class="ticket" value="true" id="MERCADOPAGO_{$offline_payment|escape:'htmlall':'UTF-8'}_ACTIVE"
-							{if $value.disabled == 'true'}
-								checked
-							{/if} />
-						</div>
+                        {if $offline_payment != 'pec'}
+                            <div class="">
+                                <label>{$value.name|ucfirst|escape:'htmlall':'UTF-8'}:</label>
+                                <input type="checkbox" name="MERCADOPAGO_{$offline_payment|upper|escape:'htmlall':'UTF-8'}_ACTIVE" onclick="checkValueBox(this)" class="ticket options_custom" value="true" id="MERCADOPAGO_{$offline_payment|escape:'htmlall':'UTF-8'}_ACTIVE"
+                                {if $value.excluded == 'true'}
+                                    checked
+                                {/if} />
+                            </div>
+                         {/if}
 					<br />
 					{/foreach}
 
@@ -467,189 +469,162 @@
 		</form>
 	</div>
 </div>
-
 <script type="text/javascript">
+checkPaymentOff();
+function checkPaymentOff() {
+   if ($('.options_custom')) {
+       if($('#custom_active').val() == "false") {
+           $('.options_custom').val(true);
+           $('.options_custom').prop('disabled', true);
+       } else {
+            $('.options_custom').prop('disabled', false);
+       }
+   }
+}
+    
+function checkValueBox(obj) {
 
-	window.onload = function() {
-		if (document.getElementById("category")){
-			document.getElementById("category").value = "{$category|escape:'htmlall':'UTF-8'}";
-		}
+    if(obj.checked) {
+       obj.value = "true";
+    } else {
+       obj.value = "false"; 
+    }
+    return false;
+}
 
-		if (document.getElementById("coupon_active")){
-			document.getElementById("coupon_active").value = "{$coupon_active|escape:'htmlall':'UTF-8'}";
-		}
+window.onload = function() {
+    bloquearEnvios(document.getElementById("standard_active"));
+    if (document.getElementById("category")){
+        document.getElementById("category").value = "{$category|escape:'htmlall':'UTF-8'}";
+    }
 
-		if (document.getElementById("MERCADOPAGO_CART_CALCULATE")){
-			document.getElementById("MERCADOPAGO_CART_CALCULATE").value = "{$MERCADOPAGO_CART_CALCULATE|escape:'htmlall':'UTF-8'}";
-		}
+    if (document.getElementById("coupon_active")){
+        document.getElementById("coupon_active").value = "{$coupon_active|escape:'htmlall':'UTF-8'}";
+    }
 
-		if (document.getElementById("MERCADOPAGO_PRODUCT_CALCULATE")){
-			document.getElementById("MERCADOPAGO_PRODUCT_CALCULATE").value = "{$MERCADOPAGO_PRODUCT_CALCULATE|escape:'htmlall':'UTF-8'}";
-		}
+    if (document.getElementById("MERCADOPAGO_CART_CALCULATE")){
+        document.getElementById("MERCADOPAGO_CART_CALCULATE").value = "{$MERCADOPAGO_CART_CALCULATE|escape:'htmlall':'UTF-8'}";
+    }
+    if (document.getElementById("MERCADOPAGO_PRODUCT_CALCULATE")){
+        document.getElementById("MERCADOPAGO_PRODUCT_CALCULATE").value = "{$MERCADOPAGO_PRODUCT_CALCULATE|escape:'htmlall':'UTF-8'}";
+    }
 
-		if (document.getElementById("coupon_ticket_active")){
-			document.getElementById("coupon_ticket_active").value = "{$coupon_ticket_active|escape:'htmlall':'UTF-8'}";
-		}
+    if (document.getElementById("coupon_ticket_active")){
+        document.getElementById("coupon_ticket_active").value = "{$coupon_ticket_active|escape:'htmlall':'UTF-8'}";
+    }
 
-		if (document.getElementById("point_active")){
-			document.getElementById("point_active").value = "{$point_active|escape:'htmlall':'UTF-8'}";
-		}
+    if (document.getElementById("point_active")){
+        document.getElementById("point_active").value = "{$point_active|escape:'htmlall':'UTF-8'}";
+    }
 
-		if (document.getElementById("two_cards")){
-			document.getElementById("two_cards").value = "{$two_cards|escape:'htmlall':'UTF-8'}";
-		}
+    if (document.getElementById("two_cards")){
+        document.getElementById("two_cards").value = "{$two_cards|escape:'htmlall':'UTF-8'}";
+    }
 
-		if (document.getElementById("standard_active")){
-			document.getElementById("standard_active").value = "{$standard_active|escape:'htmlall':'UTF-8'}";
-		}
+    if (document.getElementById("standard_active")){
+        document.getElementById("standard_active").value = "{$standard_active|escape:'htmlall':'UTF-8'}";
+    }
 
-		if (document.getElementById("custom_active")){
-			document.getElementById("custom_active").value = "{$custom_active|escape:'htmlall':'UTF-8'}";
-		}
+    if (document.getElementById("custom_active")){
+        document.getElementById("custom_active").value = "{$custom_active|escape:'htmlall':'UTF-8'}";
+    }
 
-		if (document.getElementById("MERCADOENVIOS_ACTIVATE")){
-			document.getElementById("MERCADOENVIOS_ACTIVATE").value = "{$MERCADOENVIOS_ACTIVATE|escape:'htmlall':'UTF-8'}" == "" ? "false" :
-			"{$MERCADOENVIOS_ACTIVATE|escape:'htmlall':'UTF-8'}";
-		}
+    if (document.getElementById("MERCADOENVIOS_ACTIVATE")){
+        document.getElementById("MERCADOENVIOS_ACTIVATE").value = "{$MERCADOENVIOS_ACTIVATE|escape:'htmlall':'UTF-8'}" == "" ? "false" :
+        "{$MERCADOENVIOS_ACTIVATE|escape:'htmlall':'UTF-8'}";
+    }
 
-		if (document.getElementById("window_type")){
-			document.getElementById("window_type").value = "{$window_type|escape:'htmlall':'UTF-8'}";
-		}
+    if (document.getElementById("window_type")){
+        document.getElementById("window_type").value = "{$window_type|escape:'htmlall':'UTF-8'}";
+    }
 
-		if (document.getElementById("auto_return")){
-			document.getElementById("auto_return").value = "{$auto_return|escape:'htmlall':'UTF-8'}";
-		}
+    if (document.getElementById("auto_return")){
+        document.getElementById("auto_return").value = "{$auto_return|escape:'htmlall':'UTF-8'}";
+    }
 
-		{foreach from=$payment_methods_settings key=payment_method item=value}
-			document.getElementById("{$payment_method|escape:'htmlall':'UTF-8'}").checked = "{$value|escape:'htmlall':'UTF-8'}";
-		{/foreach}
+    {foreach from=$payment_methods_settings key=payment_method item=value}
+        document.getElementById("{$payment_method|escape:'htmlall':'UTF-8'}").checked = "{$value|escape:'htmlall':'UTF-8'}";
+    {/foreach}
 
-	}
-
-
-	function bloquearEnvios(obj) {
-		$( "#MERCADOENVIOS_ACTIVATE" ).val("false");
-		if (obj != null && obj.value == "true") {
-			$( "#MERCADOENVIOS_ACTIVATE" ).prop("disabled", false);
-		} else {
-			$( "#MERCADOENVIOS_ACTIVATE" ).prop("disabled", true);
-		}
-	}
-
-	$("#MERCADOENVIOS_ACTIVATE").change(
-			function() {
-				if (this.value == "true") {
-					retorno = window.confirm("{l s='If you enable this, the others payment type will be disable. Do you want to continue?' mod='mercadopago'}");
-					if (retorno) {
-						$( "#creditcard_active" ).val("false");
-						$( ".ticket" ).val("false");
-						$('[name=MERCADOPAGO_PUBLIC_KEY]').val("");
-						$('[name=MERCADOPAGO_ACCESS_TOKEN]').val("");
-						loadCustom();
-					}
-				}
-		});
-	$( "#MERCADOENVIOS_ACTIVATE" ).prop("disabled", true);
-	$("#standard_active").change(function(){
-		bloquearEnvios(this);
-	}
-	);
+}
 
 
-	$(document).ready(function (){
-		bloquearEnvios(document.getElementById("standard_active"));
-	});
+function bloquearEnvios(obj) {
+    $( "#MERCADOENVIOS_ACTIVATE" ).val("false");
+    if (obj != null && obj.value == "true") {
+        $( "#MERCADOENVIOS_ACTIVATE" ).prop("disabled", false);
+    } else {
+        $( "#MERCADOENVIOS_ACTIVATE" ).prop("disabled", true);
+    }
+}
 
-	function openTabSettings(evt, cityName) {
-	    // Declare all variables
-	    var i, tabcontent, tablinks;
-
-	    // Get all elements with class="tabcontent" and hide them
-	    tabcontent = document.getElementsByClassName("tabcontentSettings");
-	    for (i = 0; i < tabcontent.length; i++) {
-	        tabcontent[i].style.display = "none";
-	    }
-
-	    // Get all elements with class="tablinks" and remove the class "active"
-	    tablinks = document.getElementsByClassName("tablinksSettings");
-	    for (i = 0; i < tablinks.length; i++) {
-	        tablinks[i].className = tablinks[i].className.replace(" active", "");
-	    }
-
-	    // Show the current tab, and add an "active" class to the link that opened the tab
-	    document.getElementById(cityName).style.display = "block";
-	    evt.currentTarget.className += " active";
-	}
-	// Get the element with id="defaultOpen" and click on it
-	document.getElementById("defaultOpen").click();
-
-	// Get the element with id="defaultOpen" and click on it
-	document.getElementById("defaultTab").click();
-
-	function openTab(evt, cityName) {
-	    // Declare all variables
-	    var i, tabcontent, tablinks;
-
-	    // Get all elements with class="tabcontent" and hide them
-	    tabcontent = document.getElementsByClassName("tabcontent");
-	    for (i = 0; i < tabcontent.length; i++) {
-	        tabcontent[i].style.display = "none";
-	    }
-
-	    // Get all elements with class="tablinks" and remove the class "active"
-	    tablinks = document.getElementsByClassName("tablinks");
-	    for (i = 0; i < tablinks.length; i++) {
-	        tablinks[i].className = tablinks[i].className.replace(" active", "");
-	    }
-
-	    // Show the current tab, and add an "active" class to the link that opened the tab
-	    document.getElementById(cityName).style.display = "block";
-	    evt.currentTarget.className += " active";
-	}
+$("#MERCADOENVIOS_ACTIVATE").change(
+        function() {
+            if (this.value == "true") {
+                retorno = window.confirm("{l s='If you enable this, the others payment type will be disable. Do you want to continue?' mod='mercadopago'}");
+                if (retorno) {
+                    $( "#creditcard_excluded" ).val("false");
+                    $( ".ticket" ).val("false");
+                    $('[name=MERCADOPAGO_PUBLIC_KEY]').val("");
+                    $('[name=MERCADOPAGO_ACCESS_TOKEN]').val("");
+                    loadCustom();
+                }
+            }
+    });
+    $( "#MERCADOENVIOS_ACTIVATE" ).prop("disabled", true);
+    $("#standard_active").change(function(){
+        bloquearEnvios(this);
+    }
+);
 
 
-// 	$('#MERCADOPAGO_PUBLIC_KEY').on("change", function(){
-// 		loadCustom();
-// 	});
+function openTabSettings(evt, cityName) {
+    // Declare all variables
+    var i, tabcontent, tablinks;
 
-// 	$('#MERCADOPAGO_ACCESS_TOKEN').on("change", function(){
-// 		loadCustom();
-// 	});
-/*
-function loadCustom() {
-		if($('#MERCADOPAGO_ACCESS_TOKEN').val() == ""
-			|| $('#MERCADOPAGO_PUBLIC_KEY').val() == "") {
+    // Get all elements with class="tabcontent" and hide them
+    tabcontent = document.getElementsByClassName("tabcontentSettings");
+    for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+    }
 
-				$( "#creditcard_active" ).val("false");
-				$( ".ticket" ).val("false");
+    // Get all elements with class="tablinks" and remove the class "active"
+    tablinks = document.getElementsByClassName("tablinksSettings");
+    for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" active", "");
+    }
 
-				$("#creditcard_active").attr('disabled', true);
-				$(".ticket").attr('disabled', true);
+    // Show the current tab, and add an "active" class to the link that opened the tab
+    document.getElementById(cityName).style.display = "block";
+    evt.currentTarget.className += " active";
+}
+// Get the element with id="defaultOpen" and click on it
+document.getElementById("defaultOpen").click();
 
-				$("#creditcard_active").prop('checked', false);
-				$(".ticket").prop('checked', false);
-		} else {
-				$("#creditcard_active").attr('disabled', false);
-				$(".ticket").attr('disabled', false);
-		}
-	}
-	loadCustom();*/
+// Get the element with id="defaultOpen" and click on it
+document.getElementById("defaultTab").click();
 
-//     $('.ticket').change(function() {
-//         if($(this).is(":checked")) {
-//             $(this).val('true');
-//         } else {
-//         	$(this).val('false');
-//         }
-//     });
+function openTab(evt, cityName) {
+    // Declare all variables
+    var i, tabcontent, tablinks;
 
-//     $('#creditcard_active').change(function() {
-//         if($(this).is(":checked")) {
-//             $(this).val('true');
-//         } else {
-//         	$(this).val('false');
-//         }
-//     });
+    // Get all elements with class="tabcontent" and hide them
+    tabcontent = document.getElementsByClassName("tabcontent");
+    for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+    }
 
+    // Get all elements with class="tablinks" and remove the class "active"
+    tablinks = document.getElementsByClassName("tablinks");
+    for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" active", "");
+    }
 
+    // Show the current tab, and add an "active" class to the link that opened the tab
+    document.getElementById(cityName).style.display = "block";
+    evt.currentTarget.className += " active";
+}
+
+    
 </script>
+

@@ -120,10 +120,11 @@ class MercadoPago extends PaymentModule
     );
 
     public function __construct()
-    {
+    {      
         $this->name = 'mercadopago';
         $this->tab = 'payments_gateways';
-        $this->version = "3.6.7";
+      
+        $this->version = MPApi::VERSION;
         $this->currencies = true;
         //$this->currencies_mode = 'radio';
         $this->need_instance = 0;
@@ -880,7 +881,7 @@ class MercadoPago extends PaymentModule
         return ($this->uninstallPaymentSettings() &&
             Configuration::deleteByName('MERCADOPAGO_CATEGORY') &&
             Configuration::deleteByName('MERCADOPAGO_CREDITCARD_BANNER') &&
-            Configuration::deleteByName('MERCADOPAGO_CREDITCARD_ACTIVE') &&
+            Configuration::deleteByName('MERCADOPAGO_CREDITCARD_EXCLUDED') &&
             Configuration::deleteByName('MERCADOPAGO_STANDARD_ACTIVE') &&
             Configuration::deleteByName('MERCADOPAGO_STANDARD_BANNER') &&
             Configuration::deleteByName('MERCADOPAGO_WINDOW_TYPE') &&
@@ -1125,7 +1126,7 @@ class MercadoPago extends PaymentModule
     {
         $configs = array(
             'MERCADOPAGO_COUPON_ACTIVE',
-            'MERCADOPAGO_CREDITCARD_ACTIVE',
+            'MERCADOPAGO_CREDITCARD_EXCLUDED',
             'MERCADOPAGO_PRODUCT_CALCULATE', 'MERCADOPAGO_CART_CALCULATE',
             'MERCADOPAGO_CUSTOM_ACTIVE',
         );
@@ -1147,6 +1148,14 @@ class MercadoPago extends PaymentModule
 
         foreach ($configs as $config) {
             Configuration::updateValue($config, Tools::getValue($config));
+        }
+        
+        if (Tools::getValue('MERCADOPAGO_CUSTOM_ACTIVE') == "false") {
+            Configuration::updateValue('MERCADOPAGO_CREDITCARD_EXCLUDED', "true");  
+        } else {
+            Configuration::updateValue(
+                'MERCADOPAGO_CREDITCARD_EXCLUDED',
+                Tools::getValue('MERCADOPAGO_CREDITCARD_EXCLUDED') == "" ? "false" : "true");              
         }
     }
 
@@ -1284,37 +1293,21 @@ class MercadoPago extends PaymentModule
 
             foreach ($offline_methods_payments as $offline_payment) {
                 $op_active_variable = 'MERCADOPAGO_' . Tools::strtoupper($offline_payment['id'] . '_ACTIVE');
-
                 if (Tools::getValue('submit_checkout_custom')) {
-                    if (!Tools::getValue("MERCADOPAGO_CUSTOM_ACTIVE")) {
-                        Configuration::updateValue($op_active_variable, "false");
+                    if (Tools::getValue('MERCADOPAGO_CUSTOM_ACTIVE') == "false") {
+                        $op_excluded = "true";
                     } else {
-                        $op_active = Tools::getValue($op_active_variable);
-                        Configuration::updateValue($op_active_variable, $op_active);
+                        $op_excluded = Tools::getValue($op_active_variable);                        
                     }
+                    Configuration::updateValue($op_active_variable, $op_excluded == "" ? "false" : "true");
                 }
                 $offline_payment_settings[$offline_payment['id']] = array(
                     'name' => $offline_payment['name'],
-                    'disabled' => Configuration::get($op_active_variable),
+                    'excluded' => Configuration::get($op_active_variable),
                 );
+            }
 
-                if ($offline_payment['payment_type_id'] == "ticket") {
-                    if (!Tools::getValue("MERCADOPAGO_CUSTOM_ACTIVE")) {
-                        Configuration::updateValue("MERCADOPAGO_CUSTOM_BOLETO", "true");
-                    } else {
-                        Configuration::updateValue(
-                            'MERCADOPAGO_CUSTOM_BOLETO',
-                            Configuration::get($op_active_variable) == "" ? "false" : "true"
-                        );
-                    }
-                }
-            }
-            if (Tools::getValue('MERCADOPAGO_CUSTOM_ACTIVE') == "false") {
-                Configuration::updateValue("MERCADOPAGO_CREDITCARD_ACTIVE", "true");
-                Configuration::updateValue("MERCADOPAGO_CUSTOM_BOLETO", "true");
-            }
         }
-
         $test_user = '';
         $requirements = UtilMercadoPago::checkRequirements();
 
@@ -1338,12 +1331,12 @@ class MercadoPago extends PaymentModule
             'categories' => $this->getCategories(),
             'two_cards' => htmlentities(Configuration::get('MERCADOPAGO_TWO_CARDS'), ENT_COMPAT, 'UTF-8'),
             'MERCADOPAGO_PRODUCT_CALCULATE' => htmlentities(
-                Configuration::get('MERCADOPAGO_PRODUCT_CALCULATE'),
+                Configuration::get('MERCADOPAGO_PRODUCT_CALCULATE') == "" ? "false" :  Configuration::get('MERCADOPAGO_PRODUCT_CALCULATE'),
                 ENT_COMPAT,
                 'UTF-8'
             ),
             'MERCADOPAGO_CART_CALCULATE' => htmlentities(
-                Configuration::get('MERCADOPAGO_CART_CALCULATE'),
+                Configuration::get('MERCADOPAGO_CART_CALCULATE') == "" ? "false" :  Configuration::get('MERCADOPAGO_CART_CALCULATE'),
                 ENT_COMPAT,
                 'UTF-8'
             ),
@@ -1362,8 +1355,8 @@ class MercadoPago extends PaymentModule
                 ENT_COMPAT,
                 'UTF-8'
             ),
-            'creditcard_active' => htmlentities(
-                Configuration::get('MERCADOPAGO_CREDITCARD_ACTIVE'),
+            'creditcard_excluded' => htmlentities(
+                Configuration::get('MERCADOPAGO_CREDITCARD_EXCLUDED'),
                 ENT_COMPAT,
                 'UTF-8'
             ),
@@ -1565,7 +1558,7 @@ class MercadoPago extends PaymentModule
         }
 
         $data = array(
-            'creditcard_active' => Configuration::get('MERCADOPAGO_CREDITCARD_ACTIVE'),
+            'creditcard_excluded' => Configuration::get('MERCADOPAGO_CREDITCARD_EXCLUDED'),
             'public_key' => Configuration::get('MERCADOPAGO_PUBLIC_KEY'),
             'access_token' => Configuration::get('MERCADOPAGO_ACCESS_TOKEN'),
         );
@@ -1594,7 +1587,7 @@ class MercadoPago extends PaymentModule
     }
 
     public function hookPayment($params)
-    {
+    {      
         if (!$this->active) {
             return;
         }
@@ -1616,21 +1609,18 @@ class MercadoPago extends PaymentModule
         $this->context->smarty->assign(
             array('orderTotal' => $orderTotal, 'credit_card_discount' => $credit_card_discount)
         );
-        
-        $creditcard_disable = (Configuration::get('MERCADOPAGO_CREDITCARD_ACTIVE') == "") ? "false" : "true";
+
+        $creditcard_excluded = Configuration::get('MERCADOPAGO_CREDITCARD_EXCLUDED');
         $mercadoenvios_activate = Configuration::get('MERCADOENVIOS_ACTIVATE');
-        $boleto_disable = Configuration::get('MERCADOPAGO_CUSTOM_BOLETO');
         $boleto_discount = (int) Configuration::get('MERCADOPAGO_ACTIVE_DISCOUNT_BOLETO');
 
         if ($mercadoenvios_activate == 'true') {
-            $creditcard_disable = 'true';
-            $boleto_disable = 'true';
+            $creditcard_excluded = 'true';
         } else {
             $mercadoenvios_activate = 'false';
         }
 
         if ($this->hasCredential()) {
-            UtilMercadoPago::log("hasCredential", "hasCredential");
             $this_path_ssl = (Configuration::get('PS_SSL_ENABLED') ? 'https://' : 'http://') .
             htmlspecialchars($_SERVER['HTTP_HOST'], ENT_COMPAT, 'UTF-8') . __PS_BASE_URI__;
             $data = array(
@@ -1640,8 +1630,7 @@ class MercadoPago extends PaymentModule
                 'percent' => $percent,
                 'this_path_ssl' => $this_path_ssl,
                 'mercadoenvios_activate' => $mercadoenvios_activate,
-                'boleto_disable' => $boleto_disable,
-                'creditcard_disable' => $creditcard_disable,
+                'creditcard_excluded' => $creditcard_excluded,
                 'coupon_active' => Configuration::get('MERCADOPAGO_COUPON_ACTIVE'),
                 'coupon_ticket_active' => Configuration::get('MERCADOPAGO_COUPON_TICKET_ACTIVE'),
 
@@ -1731,7 +1720,6 @@ class MercadoPago extends PaymentModule
             }
             // send offline settings
             $offline_methods_payments = $this->mercadopago->getOfflinePaymentMethods();
-            error_log(print_r($offline_methods_payments, true));
             $offline_payment_settings = array();
             foreach ($offline_methods_payments as $offline_payment) {
                 $op_banner_variable = 'MERCADOPAGO_' . Tools::strtoupper($offline_payment['id'] . '_BANNER');
@@ -1745,12 +1733,13 @@ class MercadoPago extends PaymentModule
                 $offline_payment_settings[$offline_payment['id']] = array(
                     'name' => $offline_payment['name'],
                     'banner' => Configuration::get($op_banner_variable),
-                    'active' => Configuration::get($op_active_variable),
+                    'excluded' => Configuration::get($op_active_variable),
                     'thumbnail' => $thumbnail,
                 );
-            }
+            }                
             $data['offline_payment_settings'] = $offline_payment_settings;
-            if ($boleto_disable == "false" && Configuration::get('MERCADOPAGO_COUNTRY') == 'MLB') {
+            
+            if (Configuration::get('MERCADOPAGO_COUNTRY') == 'MLB' && $offline_payment_settings['bolbradesco']['excluded'] == "false") {
                 $data['ticket'] = $this->getInfomationsForTicket($cart->id_address_invoice);
             }
 
@@ -1817,7 +1806,6 @@ class MercadoPago extends PaymentModule
      */
     public function hookPaymentReturn($params)
     {
-        UtilMercadoPago::log("hookPaymentReturn", "1");
         if (!$this->active) {
             return;
         }
@@ -2529,7 +2517,6 @@ class MercadoPago extends PaymentModule
         }
 
         $config_shipment = MercadoPago::$countryOptions[Configuration::get('MERCADOPAGO_COUNTRY')];
-
         $width = max($width, $config_shipment['MP_SHIPPING_MIN_W']);
         $height = max($height, $config_shipment['MP_SHIPPING_MIN_H']);
         $depth = max($depth, $config_shipment['MP_SHIPPING_MIN_D']);
@@ -2605,8 +2592,6 @@ class MercadoPago extends PaymentModule
         $isMercadoEnvios = 0;
         if ($checkout == 'standard' && $topic == 'merchant_order' && $id > 0) {
             $result = $this->mercadopago->getMerchantOrder($id);
-            UtilMercadoPago::log("====id merchant order====", $id);
-            UtilMercadoPago::log("====result merchantOrder====", Tools::jsonEncode($result));
             $merchant_order_info = $result['response'];
             // check value
             $cart = new Cart($merchant_order_info['external_reference']);
@@ -2616,7 +2601,6 @@ class MercadoPago extends PaymentModule
             foreach ($payments as $payment) {
                 // get payment info
                 $result = $this->mercadopago->getPayment($payment['id'], "standard");
-                UtilMercadoPago::log("====result payment====", Tools::jsonEncode($result));
                 $payment_info = $result['response'];
 
                 // colect payment details
@@ -3414,7 +3398,7 @@ class MercadoPago extends PaymentModule
         Configuration::updateValue('MERCADOPAGO_ACTIVE_DISCOUNT_CREDITCARD', false);
         Configuration::updateValue('MERCADOPAGO_ACTIVE_DISCOUNT_BOLETO', false);
 
-        Configuration::updateValue('MERCADOPAGO_CREDITCARD_ACTIVE', false);
+        Configuration::updateValue('MERCADOPAGO_CREDITCARD_EXCLUDED', false);
         Configuration::updateValue('MERCADOPAGO_CUSTOM_BOLETO', false);
         Configuration::updateValue('MERCADOPAGO_PEC_ACTIVE', false);
         Configuration::updateValue('MERCADOPAGO_CART_CALCULATE', false);
@@ -3454,7 +3438,7 @@ class MercadoPago extends PaymentModule
                     Configuration::get('MERCADOPAGO_STANDARD_ACTIVE')
                 ),
                 "checkout_custom_credit_card" => UtilMercadoPago::checkValueNull(
-                    Configuration::get('MERCADOPAGO_CREDITCARD_ACTIVE')
+                    Configuration::get('MERCADOPAGO_CREDITCARD_EXCLUDED')
                 ),
                 "code_version" => phpversion(),
                 "module_version" => $this->version,

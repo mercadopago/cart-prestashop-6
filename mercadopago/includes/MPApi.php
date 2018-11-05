@@ -31,7 +31,7 @@ include_once 'MPRestCli.php';
 
 class MPApi
 {
-    const VERSION = '3.6.8';
+    const VERSION = '3.6.9';
 
     /* Info */
     const INFO = 1;
@@ -350,7 +350,6 @@ class MPApi
         }
 
         $result = $result['response'];
-
         // remove account_money
         foreach ($result as $key => $value) {
             if (in_array(

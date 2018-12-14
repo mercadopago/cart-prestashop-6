@@ -31,8 +31,12 @@ class MercadoPagoNotificationModuleFrontController extends ModuleFrontController
 {
     public function initContent()
     {
+        // It is necessary to give time for the function validateOrder create an order.
+        // https://goo.gl/oC44t8
+        sleep(rand(0, 10));
+
         parent::initContent();
-        
+
         $cart = new Cart(Tools::getValue('cart_id'));
         $total = (float) ($cart->getOrderTotal(true, Cart::BOTH));
         $checkout = Tools::getValue('checkout');
@@ -72,19 +76,20 @@ class MercadoPagoNotificationModuleFrontController extends ModuleFrontController
         UtilMercadoPago::log(
             "Notification received - ",
             "cart id ".Tools::getValue('cart_id')." - topic = " . $topic
-        );     
+        );
 
         UtilMercadoPago::log(
             "Notification received - ",
             "cart id ".Tools::getValue('cart_id')." - the order exist ? = " . $cart->orderExists()
-        );       
+        );
         
         if ($checkout == 'custom') {
             $status = $this->getStatusCustom();
             if ($status == 'rejected') {
                 UtilMercadoPago::log(
                     "Notification",
-                    "cart id ".Tools::getValue('cart_id')." - The notification came, but the status is rejected " . Tools::getValue('data_id')
+                    "cart id ".Tools::getValue('cart_id')." - 
+                    The notification came, but the status is rejected " . Tools::getValue('data_id')
                 );
                 var_dump(http_response_code(500));
                 die();
@@ -101,9 +106,10 @@ class MercadoPagoNotificationModuleFrontController extends ModuleFrontController
 
         if ($checkout == 'standard' || $checkout == 'custom') {
             if (!$cart->orderExists()) {
-               UtilMercadoPago::log(
+                UtilMercadoPago::log(
                     "Notification received - ",
-                    "cart id ".Tools::getValue('cart_id')." - order doesn't exist " . $cart->id ." and return 500 to API, because is necessary to create before."
+                    "cart id ".Tools::getValue('cart_id')." - order doesn't exist " .
+                    $cart->id ." and return 500 to API, because is necessary to create before."
                 );
                 
                 var_dump(http_response_code(500));
@@ -121,13 +127,15 @@ class MercadoPagoNotificationModuleFrontController extends ModuleFrontController
                         false,
                         $cart->secure_key
                     );
-                   UtilMercadoPago::log(
+                    UtilMercadoPago::log(
                         "Notification received - ",
-                        "cart id ".Tools::getValue('cart_id')." - The order was created " . Order::getOrderByCartId(Tools::getValue('cart_id')) . " for the cart ". $cart->id
-                    );                  
+                        "cart id ".Tools::getValue('cart_id')." - The order was created " .
+                        Order::getOrderByCartId(Tools::getValue('cart_id')) . " for the cart ". $cart->id
+                    );
                 } catch (Exception $e) {
                     UtilMercadoPago::log(
-                        "cart id ".Tools::getValue('cart_id')." - There is a problem with notification id = " . $cart->id,
+                        "cart id ".Tools::getValue('cart_id')." - 
+                        There is a problem with notification id = " . $cart->id,
                         $e->getMessage()
                     );
                 }
@@ -139,7 +147,8 @@ class MercadoPagoNotificationModuleFrontController extends ModuleFrontController
                 );
                 UtilMercadoPago::log(
                     "Notification received - ",
-                    "cart id ".Tools::getValue('cart_id')." - The notification return 201, the cart was updated = " . $cart->id
+                    "cart id ".Tools::getValue('cart_id')." - 
+                    The notification return 201, the cart was updated = " . $cart->id
                 );
                 var_dump(http_response_code(201));
             }

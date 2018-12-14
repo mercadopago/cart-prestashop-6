@@ -34,9 +34,9 @@ class MPRestCli
 
     const API_CONFIG_BASE_URL = 'https://api.mercadopago.com/account';
   
-     /**
-     *Product Id, identifier used to designate the product, device and version
-     */
+    /**
+    *Product Id, identifier used to designate the product, device and version
+    */
     const PRODUCT_ID = 'BC32CCRU643001OI39AG';
 
 

@@ -26,7 +26,6 @@
 include_once dirname(__FILE__) . '/../../mercadopago.php';
 class MercadoPagoDiscountModuleFrontController extends ModuleFrontController
 {
-
     public function initContent()
     {
         parent::initContent();

@@ -120,11 +120,11 @@ class MercadoPago extends PaymentModule
     );
 
     public function __construct()
-    {      
+    {
         $this->name = 'mercadopago';
         $this->tab = 'payments_gateways';
       
-        $this->version = MPApi::VERSION;
+        $this->version = '3.7.0';//MPApi::VERSION;
         $this->currencies = true;
         //$this->currencies_mode = 'radio';
         $this->need_instance = 0;
@@ -984,6 +984,7 @@ class MercadoPago extends PaymentModule
             $country = $this->mercadopago->getCountry();
             Configuration::updateValue('MERCADOPAGO_COUNTRY', $country);
             Configuration::updateValue('MERCADOPAGO_CUSTOM_ACTIVE', 'false');
+            Configuration::updateValue('MERCADOPAGO_CREDITCARD_EXCLUDED', 'false');
         }
 
         $this->setSponsorId($country);
@@ -1151,11 +1152,12 @@ class MercadoPago extends PaymentModule
         }
         
         if (Tools::getValue('MERCADOPAGO_CUSTOM_ACTIVE') == "false") {
-            Configuration::updateValue('MERCADOPAGO_CREDITCARD_EXCLUDED', "true");  
+            Configuration::updateValue('MERCADOPAGO_CREDITCARD_EXCLUDED', "true");
         } else {
             Configuration::updateValue(
                 'MERCADOPAGO_CREDITCARD_EXCLUDED',
-                Tools::getValue('MERCADOPAGO_CREDITCARD_EXCLUDED') == "" ? "false" : "true");              
+                Tools::getValue('MERCADOPAGO_CREDITCARD_EXCLUDED') == "" ? "false" : "true"
+            );
         }
     }
 
@@ -1297,7 +1299,7 @@ class MercadoPago extends PaymentModule
                     if (Tools::getValue('MERCADOPAGO_CUSTOM_ACTIVE') == "false") {
                         $op_excluded = "true";
                     } else {
-                        $op_excluded = Tools::getValue($op_active_variable);                        
+                        $op_excluded = Tools::getValue($op_active_variable);
                     }
                     Configuration::updateValue($op_active_variable, $op_excluded == "" ? "false" : "true");
                 }
@@ -1306,7 +1308,6 @@ class MercadoPago extends PaymentModule
                     'excluded' => Configuration::get($op_active_variable),
                 );
             }
-
         }
         $test_user = '';
         $requirements = UtilMercadoPago::checkRequirements();
@@ -1331,12 +1332,14 @@ class MercadoPago extends PaymentModule
             'categories' => $this->getCategories(),
             'two_cards' => htmlentities(Configuration::get('MERCADOPAGO_TWO_CARDS'), ENT_COMPAT, 'UTF-8'),
             'MERCADOPAGO_PRODUCT_CALCULATE' => htmlentities(
-                Configuration::get('MERCADOPAGO_PRODUCT_CALCULATE') == "" ? "false" :  Configuration::get('MERCADOPAGO_PRODUCT_CALCULATE'),
+                Configuration::get('MERCADOPAGO_PRODUCT_CALCULATE') == "" ? "false" :
+                Configuration::get('MERCADOPAGO_PRODUCT_CALCULATE'),
                 ENT_COMPAT,
                 'UTF-8'
             ),
             'MERCADOPAGO_CART_CALCULATE' => htmlentities(
-                Configuration::get('MERCADOPAGO_CART_CALCULATE') == "" ? "false" :  Configuration::get('MERCADOPAGO_CART_CALCULATE'),
+                Configuration::get('MERCADOPAGO_CART_CALCULATE') == "" ? "false" :
+                Configuration::get('MERCADOPAGO_CART_CALCULATE'),
                 ENT_COMPAT,
                 'UTF-8'
             ),
@@ -1587,7 +1590,7 @@ class MercadoPago extends PaymentModule
     }
 
     public function hookPayment($params)
-    {      
+    {
         if (!$this->active) {
             return;
         }
@@ -1736,10 +1739,11 @@ class MercadoPago extends PaymentModule
                     'excluded' => Configuration::get($op_active_variable),
                     'thumbnail' => $thumbnail,
                 );
-            }                
+            }
             $data['offline_payment_settings'] = $offline_payment_settings;
             
-            if (Configuration::get('MERCADOPAGO_COUNTRY') == 'MLB' && $offline_payment_settings['bolbradesco']['excluded'] == "false") {
+            if (Configuration::get('MERCADOPAGO_COUNTRY') == 'MLB' &&
+                $offline_payment_settings['bolbradesco']['excluded'] == "false") {
                 $data['ticket'] = $this->getInfomationsForTicket($cart->id_address_invoice);
             }
 

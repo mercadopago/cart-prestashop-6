@@ -26,7 +26,6 @@
 
 class UtilMercadoPago
 {
-
     public static $DEFAULT_BANNER = array(
         'MLB' => "https://imgmp.mlstatic.com/org-img/MLB/MP/BANNERS/PSJ/575x40_banner_psj_6x.jpg",
         'MLM' => "https://imgmp.mlstatic.com/org-img/banners/mx/medios/MLM_575X40_new.jpg",

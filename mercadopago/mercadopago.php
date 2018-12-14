@@ -984,6 +984,7 @@ class MercadoPago extends PaymentModule
             $country = $this->mercadopago->getCountry();
             Configuration::updateValue('MERCADOPAGO_COUNTRY', $country);
             Configuration::updateValue('MERCADOPAGO_CUSTOM_ACTIVE', 'false');
+            Configuration::updateValue('MERCADOPAGO_CREDITCARD_EXCLUDED', 'false');
         }
 
         $this->setSponsorId($country);

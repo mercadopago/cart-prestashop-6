@@ -124,7 +124,7 @@ class MercadoPago extends PaymentModule
         $this->name = 'mercadopago';
         $this->tab = 'payments_gateways';
       
-        $this->version = '3.7.0';//MPApi::VERSION;
+        $this->version = '3.7.1';//MPApi::VERSION;
         $this->currencies = true;
         //$this->currencies_mode = 'radio';
         $this->need_instance = 0;
@@ -307,7 +307,7 @@ class MercadoPago extends PaymentModule
             Db::getInstance()->update(
                 'order_state',
                 array(
-                    'logable' => 1,
+                    'logable' => 0,
                     'send_email' => 0,
                 ),
                 'module_name = "mercadopago" and id_order_state = ' . Configuration::get('MERCADOPAGO_STATUS_12')

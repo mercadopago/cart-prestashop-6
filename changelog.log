@@ -130,7 +130,11 @@ V3.6.8
 3.6.9
 - Fix the key used to create the orders, customer->secure_key to cart-secure_key
 
-3.7.0 (14/12/2019)
+3.7.0 (14/12/2018)
 - Ajusts to Prestashop Marketplace Validation
 - Fix Credit Card activation settings for first setup
 - Add sleep to give time to function validateOrder
+
+3.7.1 (17/01/2019)
+- Fix ID sent to validateOrder
+- Fix Order Status Started

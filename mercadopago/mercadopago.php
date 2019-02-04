@@ -124,7 +124,7 @@ class MercadoPago extends PaymentModule
         $this->name = 'mercadopago';
         $this->tab = 'payments_gateways';
       
-        $this->version = '3.7.0';//MPApi::VERSION;
+        $this->version = '3.7.8';//MPApi::VERSION;
         $this->currencies = true;
         //$this->currencies_mode = 'radio';
         $this->need_instance = 0;
@@ -307,7 +307,7 @@ class MercadoPago extends PaymentModule
             Db::getInstance()->update(
                 'order_state',
                 array(
-                    'logable' => 1,
+                    'logable' => 0,
                     'send_email' => 0,
                 ),
                 'module_name = "mercadopago" and id_order_state = ' . Configuration::get('MERCADOPAGO_STATUS_12')
@@ -669,7 +669,7 @@ class MercadoPago extends PaymentModule
             $statusPS = (int) $order->getCurrentState();
             if (Configuration::get("MERCADOPAGO_STATUS_12") == $statusPS) {
                 $sql = 'SELECT * FROM ' . _DB_PREFIX_ . 'mercadopago_orders_initpoint
-                WHERE cart_id = ' . $order->id_cart;
+                WHERE cart_id = ' . (int) $order->id_cart;
                 if ($row = Db::getInstance()->getRow($sql)) {
                     if ($row['init_point']) {
                         $settings = array('init_point' => $row['init_point']);
@@ -1756,7 +1756,6 @@ class MercadoPago extends PaymentModule
             } else {
                 $data['payment_methods_credit'] = array();
             }
-
             $pageReturn = '/views/templates/hook/checkout.tpl';
             $this->context->smarty->assign($data);
             return $this->display(__file__, $pageReturn);
@@ -3484,26 +3483,6 @@ class MercadoPago extends PaymentModule
             );
         }
         return isset($result['mercadopago_orders_id']) ? $result['mercadopago_orders_id'] : false;
-    }
-
-    public function insertMercadoPagoOrder($cart_id, $order_id, $valid, $ipn_status)
-    {
-        $insertOrder = 'INSERT INTO ' .
-        _DB_PREFIX_ . 'mercadopago_orders (cart_id, order_id, added, valid, ipn_status) VALUES(' .
-        $cart_id . ',' . $order_id . ',\'' . pSql(date('Y-m-d h:i:s')) . '\',' . $valid . ',\'' . $ipn_status . '\')';
-        try {
-            $returnInsert = Db::getInstance(_PS_USE_SQL_SLAVE_)->Execute($insertOrder);
-        } catch (Exception $e) {
-            UtilMercadoPago::logMensagem(
-                "FATAL ERROR, error on insert mercadopago_orders. ",
-                MPApi::ERROR,
-                $e->getMessage(),
-                true,
-                null,
-                "mercadopago->insertMercadoPagoOrder"
-            );
-        }
-        return $returnInsert;
     }
 
     public function setNamePaymentType($payment_type_id)

@@ -115,6 +115,8 @@ class MercadoPagoNotificationModuleFrontController extends ModuleFrontController
                 var_dump(http_response_code(500));
                 $displayName = $mercadopago->l('Mercado Pago ' . $checkout);
                 $payment_status = Configuration::get(UtilMercadoPago::$statusMercadoPagoPresta['started']);
+                $customer = new Customer((int)$cart->id_customer);
+                
                 try {
                     $mercadopago->validateOrder(
                         $cart->id,
@@ -125,7 +127,7 @@ class MercadoPagoNotificationModuleFrontController extends ModuleFrontController
                         array(),
                         (int) $cart->id_currency,
                         false,
-                        $cart->secure_key
+                        $customer->secure_key
                     );
                     UtilMercadoPago::log(
                         "Notification received - ",

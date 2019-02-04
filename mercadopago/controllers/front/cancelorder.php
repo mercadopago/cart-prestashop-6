@@ -41,9 +41,9 @@ class MercadoPagoCancelOrderModuleFrontController extends ModuleFrontController
         $responseCancel = null;
         $token = Tools::getAdminToken('AdminOrder'.Tools::getValue('id_order'));
         $token_form = Tools::getValue('token_form');
-
+        
         //check token
-        if ($token == $token_form) {
+        if ($token === $token_form) {
             $order = new Order(Tools::getValue("id_order"));
             $order_payments =  $order->getOrderPayments();
             foreach ($order_payments as $order_payment) {

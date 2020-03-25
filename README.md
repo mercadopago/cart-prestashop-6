@@ -7,7 +7,6 @@
 <!-- [![Maintainability](https://api.codeclimate.com/v1/badges/a3efc709ca5a444807b9/maintainability)](https://codeclimate.com/github/mercadopago/cart-prestashop-6/maintainability) -->
 
 # Prestashop - Mercado Pago Module (1.6.x)
----
 
 * [Features](#features)
 * [Requirements](#requirements)
